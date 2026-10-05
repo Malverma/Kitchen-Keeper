@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
@@ -18,7 +19,6 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
 
 @Composable
@@ -59,32 +60,47 @@ fun PhotoThumbnail(path: String, contentDescription: String) {
     )
 }
 
+/** Swipe right to delete, swipe left to edit. */
 @Composable
-fun SwipeToDeleteRow(onDelete: () -> Unit, content: @Composable () -> Unit) {
-    val dismissState = rememberSwipeToDismissBoxState()
-    LaunchedEffect(dismissState.currentValue) {
-        if (dismissState.currentValue != SwipeToDismissBoxValue.Settled) onDelete()
-    }
+fun SwipeActionsRow(onDelete: () -> Unit, onEdit: () -> Unit, content: @Composable () -> Unit) {
+    // Act when the swipe completes but never stay dismissed: the row's swipe state is restored by
+    // key, so a dismissed state would re-delete the row as soon as Undo brings it back.
+    val dismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = { value ->
+            when (value) {
+                SwipeToDismissBoxValue.StartToEnd -> onDelete()
+                SwipeToDismissBoxValue.EndToStart -> onEdit()
+                SwipeToDismissBoxValue.Settled -> Unit
+            }
+            false
+        },
+    )
     SwipeToDismissBox(
         state = dismissState,
         backgroundContent = {
-            val alignment = if (dismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
-                Alignment.CenterEnd
-            } else {
-                Alignment.CenterStart
-            }
+            val editing = dismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.errorContainer)
+                    .background(
+                        if (editing) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer,
+                    )
                     .padding(horizontal = 24.dp),
-                contentAlignment = alignment,
+                contentAlignment = if (editing) Alignment.CenterEnd else Alignment.CenterStart,
             ) {
-                Icon(
-                    Icons.Outlined.Delete,
-                    contentDescription = "Delete",
-                    tint = MaterialTheme.colorScheme.onErrorContainer,
-                )
+                if (editing) {
+                    Icon(
+                        Icons.Outlined.Edit,
+                        contentDescription = "Edit",
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    )
+                } else {
+                    Icon(
+                        Icons.Outlined.Delete,
+                        contentDescription = "Delete",
+                        tint = MaterialTheme.colorScheme.onErrorContainer,
+                    )
+                }
             }
         },
     ) {
@@ -104,11 +120,17 @@ fun CoroutineScope.showUndoDelete(
 ) {
     snackbarHostState.currentSnackbarData?.dismiss()
     launch {
-        val result = snackbarHostState.showSnackbar(
-            message = "$name deleted",
-            actionLabel = "Undo",
-            duration = SnackbarDuration.Short,
-        )
+        // SnackbarDuration.Short is fixed at 4s, so time the snackbar ourselves; timing out
+        // cancels showSnackbar, which hides it.
+        val result = withTimeoutOrNull(UNDO_TIMEOUT_MS) {
+            snackbarHostState.showSnackbar(
+                message = "$name deleted",
+                actionLabel = "Undo",
+                duration = SnackbarDuration.Indefinite,
+            )
+        }
         if (result == SnackbarResult.ActionPerformed) onUndo() else onFinalize()
     }
 }
+
+private const val UNDO_TIMEOUT_MS = 5_000L

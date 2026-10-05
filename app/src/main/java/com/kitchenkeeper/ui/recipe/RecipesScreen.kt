@@ -22,7 +22,7 @@ import com.kitchenkeeper.data.RecipeWithIngredients
 import com.kitchenkeeper.ui.AppViewModelProvider
 import com.kitchenkeeper.ui.components.EmptyState
 import com.kitchenkeeper.ui.components.PhotoThumbnail
-import com.kitchenkeeper.ui.components.SwipeToDeleteRow
+import com.kitchenkeeper.ui.components.SwipeActionsRow
 import com.kitchenkeeper.ui.components.showUndoDelete
 
 @Composable
@@ -44,15 +44,18 @@ fun RecipesScreen(
         contentPadding = PaddingValues(bottom = 88.dp),
     ) {
         items(list, key = { it.recipe.id }) { recipe ->
-            SwipeToDeleteRow(onDelete = {
-                viewModel.delete(recipe)
-                scope.showUndoDelete(
-                    snackbarHostState,
-                    recipe.recipe.name,
-                    onUndo = { viewModel.undoDelete(recipe) },
-                    onFinalize = { viewModel.finalizeDelete(recipe) },
-                )
-            }) {
+            SwipeActionsRow(
+                onDelete = {
+                    viewModel.delete(recipe)
+                    scope.showUndoDelete(
+                        snackbarHostState,
+                        recipe.recipe.name,
+                        onUndo = { viewModel.undoDelete(recipe) },
+                        onFinalize = { viewModel.finalizeDelete(recipe) },
+                    )
+                },
+                onEdit = { onOpenRecipe(recipe.recipe.id) },
+            ) {
                 RecipeRow(recipe = recipe, onClick = { onOpenRecipe(recipe.recipe.id) })
             }
             HorizontalDivider()

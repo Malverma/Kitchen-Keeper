@@ -22,7 +22,7 @@ import com.kitchenkeeper.data.amount
 import com.kitchenkeeper.ui.AppViewModelProvider
 import com.kitchenkeeper.ui.components.EmptyState
 import com.kitchenkeeper.ui.components.PhotoThumbnail
-import com.kitchenkeeper.ui.components.SwipeToDeleteRow
+import com.kitchenkeeper.ui.components.SwipeActionsRow
 import com.kitchenkeeper.ui.components.formatted
 import com.kitchenkeeper.ui.components.showUndoDelete
 
@@ -46,15 +46,18 @@ fun PantryScreen(
         contentPadding = PaddingValues(bottom = 88.dp),
     ) {
         items(list, key = { it.id }) { item ->
-            SwipeToDeleteRow(onDelete = {
-                viewModel.delete(item)
-                scope.showUndoDelete(
-                    snackbarHostState,
-                    item.name,
-                    onUndo = { viewModel.undoDelete(item) },
-                    onFinalize = { viewModel.finalizeDelete(item) },
-                )
-            }) {
+            SwipeActionsRow(
+                onDelete = {
+                    viewModel.delete(item)
+                    scope.showUndoDelete(
+                        snackbarHostState,
+                        item.name,
+                        onUndo = { viewModel.undoDelete(item) },
+                        onFinalize = { viewModel.finalizeDelete(item) },
+                    )
+                },
+                onEdit = { onEditItem(item.id) },
+            ) {
                 PantryRow(item = item, onClick = { onEditItem(item.id) })
             }
             HorizontalDivider()
