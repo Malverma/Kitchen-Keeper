@@ -9,6 +9,8 @@ data class GroceryItem(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
     val category: FoodCategory,
+    /** Absolute path in app-private storage, null if no photo. Owned by this row. */
+    val photoPath: String?,
     val quantity: Double?,
     val unit: MeasureUnit?,
     val createdAt: Instant,

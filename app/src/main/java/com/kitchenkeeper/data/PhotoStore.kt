@@ -16,6 +16,12 @@ class PhotoStore(private val context: Context) {
     fun uriFor(file: File): Uri =
         FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
 
+    /** Copies the photo at [path] to a new file and returns its path, or null if there is none. */
+    fun copy(path: String?): String? {
+        val source = path?.let(::File)?.takeIf { it.exists() } ?: return null
+        return source.copyTo(newPhotoFile()).path
+    }
+
     fun delete(path: String?) {
         if (path != null) File(path).delete()
     }

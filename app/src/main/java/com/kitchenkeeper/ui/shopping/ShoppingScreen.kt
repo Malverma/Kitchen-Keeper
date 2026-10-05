@@ -22,6 +22,7 @@ import com.kitchenkeeper.data.GroceryItem
 import com.kitchenkeeper.data.amount
 import com.kitchenkeeper.ui.AppViewModelProvider
 import com.kitchenkeeper.ui.components.EmptyState
+import com.kitchenkeeper.ui.components.PhotoThumbnail
 import com.kitchenkeeper.ui.components.SwipeToDeleteRow
 import com.kitchenkeeper.ui.components.showUndoDelete
 import kotlinx.coroutines.launch
@@ -51,7 +52,7 @@ fun ShoppingScreen(
                     snackbarHostState,
                     item.name,
                     onUndo = { viewModel.undoDelete(item) },
-                    onFinalize = {},
+                    onFinalize = { viewModel.finalizeDelete(item) },
                 )
             }) {
                 GroceryRow(item = item, onClick = { onEditGrocery(item.id) }, onCheck = {
@@ -73,5 +74,6 @@ private fun GroceryRow(item: GroceryItem, onClick: () -> Unit, onCheck: () -> Un
         leadingContent = { Checkbox(checked = false, onCheckedChange = { onCheck() }) },
         headlineContent = { Text(item.name, style = MaterialTheme.typography.titleMedium) },
         supportingContent = { Text(details) },
+        trailingContent = item.photoPath?.let { path -> { PhotoThumbnail(path, item.name) } },
     )
 }

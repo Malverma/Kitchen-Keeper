@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Exported from the Penpot "App icon" page. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="1024"
+    android:viewportHeight="1024">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M380.96,286.40H643.04A53.76,53.76 0,0 1,696.80,340.16V719.84A53.76,53.76 0,0 1,643.04,773.60H380.96A53.76,53.76 0,0 1,327.20,719.84V340.16A53.76,53.76 0,0 1,380.96,286.40Z" />
+    <path
+        android:fillColor="#D9CCFD"
+        android:pathData="M450.68,249.71H573.32A26.88,26.88 0,0 1,600.20,276.59V310.19A26.88,26.88 0,0 1,573.32,337.07H450.68A26.88,26.88 0,0 1,423.80,310.19V276.59A26.88,26.88 0,0 1,450.68,249.71Z" />
+    <path
+        android:fillColor="#6D3FE0"
+        android:pathData="M489.32,271.55H534.68A9.24,9.24 0,0 1,543.92,280.79V280.79A9.24,9.24 0,0 1,534.68,290.03H489.32A9.24,9.24 0,0 1,480.08,280.79V280.79A9.24,9.24 0,0 1,489.32,271.55Z" />
+    <path
+        android:pathData="M417.5,433.4L417.5,506.9C417.5,518.45,426.95,527.9,438.5,527.9L480.5,527.9C492.098,527.9,501.5,518.498,501.5,506.9L501.5,433.4 M459.5,433.4L459.5,643.4 M606.5,569.9L606.5,433.4C577.505,433.4,554,456.905,554,485.9L554,548.9C554,560.45,563.45,569.9,585.5,569.9L617,569.9L606.5,569.9M606.5,569.9L606.5,643.4"
+        android:strokeColor="#8B5CF6"
+        android:strokeWidth="22.05"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

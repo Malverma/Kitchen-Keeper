@@ -10,7 +10,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [FoodItem::class, Recipe::class, RecipeIngredient::class, GroceryItem::class],
-    version = 2,
+    version = 3,
     exportSchema = true,
 )
 @TypeConverters(Converters::class)
@@ -22,7 +22,7 @@ abstract class KitchenKeeperDatabase : RoomDatabase() {
     companion object {
         fun create(context: Context): KitchenKeeperDatabase =
             Room.databaseBuilder(context, KitchenKeeperDatabase::class.java, "kitchen_keeper.db")
-                .addMigrations(MIGRATION_1_2)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                 .build()
     }
 }
@@ -50,5 +50,12 @@ private val MIGRATION_1_2 = object : Migration(1, 2) {
                 "`name` TEXT NOT NULL, `category` TEXT NOT NULL, `quantity` REAL, `unit` TEXT, " +
                 "`createdAt` INTEGER NOT NULL)",
         )
+    }
+}
+
+/** Lets grocery items keep the photo of the pantry item they came from. */
+private val MIGRATION_2_3 = object : Migration(2, 3) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE grocery_items ADD COLUMN photoPath TEXT")
     }
 }

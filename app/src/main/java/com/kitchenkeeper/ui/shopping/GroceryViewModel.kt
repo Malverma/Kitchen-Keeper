@@ -11,6 +11,7 @@ import com.kitchenkeeper.data.GroceryItem
 import com.kitchenkeeper.data.GroceryItemDao
 import com.kitchenkeeper.data.KitchenRepository
 import com.kitchenkeeper.data.MeasureUnit
+import com.kitchenkeeper.data.PhotoStore
 import com.kitchenkeeper.data.amountOf
 import com.kitchenkeeper.data.formatQuantity
 import com.kitchenkeeper.ui.components.parseQuantity
@@ -21,6 +22,7 @@ class GroceryViewModel(
     savedStateHandle: SavedStateHandle,
     private val dao: GroceryItemDao,
     private val repository: KitchenRepository,
+    private val photoStore: PhotoStore,
 ) : ViewModel() {
 
     private val itemId: Long = savedStateHandle[GROCERY_ID_ARG] ?: NEW_GROCERY_ID
@@ -81,6 +83,7 @@ class GroceryViewModel(
         val existing = original ?: return
         viewModelScope.launch {
             dao.delete(existing)
+            photoStore.delete(existing.photoPath)
             onDeleted()
         }
     }

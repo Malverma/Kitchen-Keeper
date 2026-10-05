@@ -39,11 +39,16 @@ object AppViewModelProvider {
         }
         initializer {
             val app = kitchenKeeperApp()
-            ShoppingViewModel(app.database.groceryItemDao(), app.repository)
+            ShoppingViewModel(app.database.groceryItemDao(), app.repository, app.photoStore)
         }
         initializer {
             val app = kitchenKeeperApp()
-            GroceryViewModel(createSavedStateHandle(), app.database.groceryItemDao(), app.repository)
+            GroceryViewModel(
+                createSavedStateHandle(),
+                app.database.groceryItemDao(),
+                app.repository,
+                app.photoStore,
+            )
         }
     }
 }
